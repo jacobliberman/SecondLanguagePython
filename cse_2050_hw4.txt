@@ -1,0 +1,85 @@
+import re
+import dateparser
+
+
+
+
+
+def example():
+    regex = r"(\d{2}\d{2}\d{2}) (\d{2}\d{2}\d{2}).*?WARN.*?(\d+.\d+.\d+.\d+):(\d+)"
+
+    test_str = "081109 214043 2561 WARN dfs.DataNode$DataXceiver: 10.251.30.85:50010:Got exception while serving blk_-2918118818249673980 to /10.251.90.64:"
+
+    matches = re.finditer(regex, test_str, re.MULTILINE)
+
+    for matchNum, match in enumerate(matches, start=1):
+
+        print ("Match {matchNum} was found at {start}-{end}: {match}".format(matchNum = matchNum, start = match.start(), end = match.end(), match = match.group()))
+
+        for groupNum in range(0, len(match.groups())):
+            groupNum = groupNum + 1
+
+            print ("Group {groupNum} found at {start}-{end}: {group}".format(groupNum = groupNum, start = match.start(groupNum), end = match.end(groupNum), group = match.group(groupNum)))
+
+
+def qa():           
+    regex = r"(\d{2}\d{2}\d{2}) (\d{2}\d{2}\d{2}).*?WARN.*?(\d+.\d+.\d+.\d+):(\d+)"
+    string = "{date:<40}{ip:<20}{port:<25}"
+
+    file = open("HDFS_2k.log.txt","r")
+    contents = file.read()
+    #     print(contents)
+    matches = re.findall(regex,contents,re.MULTILINE)
+
+    print(string.format(date="Date (format: mm/dd/yyyy hh:mm:ss)",ip="IP Address",port="Port\n"))
+
+    for match in matches:
+        date=match[0]
+        time=match[1]
+        ip=match[2]
+        port=match[3]
+        print(string.format(date=date[:2]+"/"+date[2:4]+"/"+date[4:] + " " +time[:2]+":"+time[2:4]+":"+time[4:],ip=ip,port=port))
+
+
+    print("-----------------------------------------------------------------------")    
+    print("Count: {} Warnings".format(len(matches)))
+
+    
+    
+def qb():
+    regex = r"dfs\.DataNode\$(\w*):"
+    file = open("HDFS_2k.log.txt","r")
+    contents = file.read()
+    
+    nodes = set()
+    
+    matches = re.findall(regex,contents,re.MULTILINE)
+    for match in matches:
+        nodes.add(match)
+    print("Active Data Nodes:")
+    for node in nodes:
+        print(node)
+
+        
+        
+        
+def qc():
+    file = open("HDFS_2k.log.txt","r")
+    first_line = file.readline()
+
+    for last_line in file:
+        pass
+
+    
+    first_line = first_line.split(" ")
+    last_line = last_line.split(" ")
+    start_date= first_line[0]
+    end_date = last_line[0]
+    
+    daterange = int(end_date)-int(start_date)
+    print("Log Duration: {}".format(daterange))    
+    
+    
+    
+def qd():
+    
